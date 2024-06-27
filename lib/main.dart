@@ -124,10 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const Card(
-                child: ListTile(
-                  title: Text('Drawerga hush kelibsiz'),
-                ),
+              const ListTile(
+                title: Text('Drawerga hush kelibsiz bro'),
               ),
               const SizedBox(
                 height: 50,
@@ -225,20 +223,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                     loadFromGlobal();
                   },
-                  child: Card(
-                    color: Colors.teal.shade500,
-                    shape: BeveledRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        2,
-                      ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.teal.shade500,
                     ),
-                    child: Column(
+                    height: MediaQuery.of(context).size.height * 0.13,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
+                        Center(
                           child: Text('Umumiy balans  $umumiyyigindi',
                               style: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold)),
+                                  fontSize: 12, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -258,15 +256,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                     loadFromGlobal();
                   },
-                  child: Card(
-                    color: Colors.teal.shade500,
-                    shape: const BeveledRectangleBorder(
-                      borderRadius: BorderRadius.horizontal(),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.13,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.teal.shade500,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 16),
+                    child: Center(
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             'Tushum $kantaktyigindimusbat',
@@ -275,17 +274,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                 fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(
-                            width: 20,
+                            width: 5,
                           ),
                           const Text(
                             'Kantakt',
                             style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 24,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(
-                            width: 20,
+                            width: 5,
                           ),
                           Text(
                             'Chiqim $kantaktyigindimanfiy',

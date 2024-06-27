@@ -348,8 +348,6 @@ class _BolimlarPageState extends State<BolimlarPage> {
                             );
                           });
                     },
-                    // title: Text(
-                    // '$index ${bolimObject.name}',)}
                     title: Text(
                       bolimObject.name,
                       style: const TextStyle(

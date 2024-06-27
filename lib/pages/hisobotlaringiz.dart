@@ -80,7 +80,7 @@ class _HisobotlaringizPageState extends State<HisobotlaringizPage> {
                 children: [
                   Container(
                     height: 50,
-                    width: 400,
+                    width: MediaQuery.of(context).size.width * .4,
                     decoration: BoxDecoration(
                       border: const Border.fromBorderSide(
                           BorderSide(color: Colors.green)),
@@ -99,7 +99,7 @@ class _HisobotlaringizPageState extends State<HisobotlaringizPage> {
                   ),
                   Container(
                     height: 50,
-                    width: 400,
+                    width: MediaQuery.of(context).size.width * .4,
                     decoration: BoxDecoration(
                       color: Colors.grey,
                       border: const Border.fromBorderSide(
@@ -119,41 +119,42 @@ class _HisobotlaringizPageState extends State<HisobotlaringizPage> {
               const SizedBox(
                 height: 10,
               ),
-              Card(
-                child: Expanded(
-                  child: ListView.builder(
-                    primary: false,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: bolimTushumSummalari.length,
-                    itemBuilder: (context, index) {
-                      Bolimlar bolim = Bolimlar.obyektlar[
-                          bolimTushumSummalari.keys.toList()[index]]!;
-                      double summa =
-                          bolimTushumSummalari.values.toList()[index];
-                      return Column(
-                        children: [
-                          Card(
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  // title: const Center(
-                                  //   child: Text('Tushum'),
-                                  // ),
-                                  subtitle: Row(
-                                    children: [
-                                      Text(bolim.name),
-                                      const Spacer(),
-                                      Text("$summa"),
-                                    ],
-                                  ),
-                                )
-                              ],
+              Center(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Expanded(
+                    child: ListView.builder(
+                      primary: false,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: bolimTushumSummalari.length,
+                      itemBuilder: (context, index) {
+                        Bolimlar bolim = Bolimlar.obyektlar[
+                            bolimTushumSummalari.keys.toList()[index]]!;
+                        double summa =
+                            bolimTushumSummalari.values.toList()[index];
+                        return Column(
+                          children: [
+                            Card(
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    subtitle: Row(
+                                      children: [
+                                        Text(bolim.name),
+                                        const Spacer(),
+                                        Text("$summa"),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),

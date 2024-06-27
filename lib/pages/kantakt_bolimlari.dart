@@ -54,7 +54,6 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
       ),
       body: Column(
         children: [
-          const Text('Teks'),
           Expanded(
             child: ListView.builder(
               itemCount: kantaktbolimObjectList.length,
@@ -87,10 +86,14 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
                                               itemBuilder: (context, index) {
                                                 return Card(
                                                   child: ListTile(
-                                                    title: Text(kantaktObject.id
-                                                        .toString()),
+                                                    title: Text(
+                                                        bolimkantaktlarii
+                                                            .keys.first
+                                                            .toString()),
                                                     subtitle: Text(
-                                                        kantaktObject.name),
+                                                        bolimkantaktlarii.values
+                                                            .toString()
+                                                            .toString()),
                                                   ),
                                                 );
                                               },
@@ -144,9 +147,9 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          height: 400,
-                          width: 300,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          width: MediaQuery.of(context).size.width * 0.3,
                           child: Expanded(
                             child: ListView.builder(
                               itemBuilder: (context, index) {
@@ -176,8 +179,23 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
                                           }
                                           kantaktObject.insert();
                                           print(
-                                              'bolimKantaktlari:    ${bolimkantaktlarii}');
-                                          'BOLIMKONTAKTLARI:    ${bolimkantaktlarii}';
+                                              "kantaktObject.toJson() ${kantaktObject.toJson()}");
+                                          print(
+                                              " kantaktObject.hashCode ${kantaktObject.hashCode.toString()}");
+                                          print(
+                                              "kantaktObject.vaqti ${kantaktObject.vaqti}");
+                                          print(
+                                              'kantaktObject.tanlov ${kantaktObject.tanlov}');
+                                          print(
+                                              'kantaktObject.runtimeType ${kantaktObject.runtimeType}');
+                                          print(
+                                              "kantaktObject.price ${kantaktObject.price}");
+                                          print(
+                                              "kantaktObject.id ${kantaktObject.id}");
+                                          print(
+                                              'bolimKantaktlari keys:    ${bolimkantaktlarii.keys.toString()}');
+                                          print(
+                                              'BOLIMKONTAKTLARI values:    ${bolimkantaktlarii.values.toString()}');
                                         },
                                         child: const Text("Qo'shish")),
                                   ),
