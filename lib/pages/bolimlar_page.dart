@@ -296,7 +296,7 @@ class _BolimlarPageState extends State<BolimlarPage> {
                                             });
                                       },
                                       child: const Text(
-                                          'Tahrirlash uchun ustiga bosing'),
+                                          'EDIT'),
                                     ),
                                     const SizedBox(
                                       width: 20,
@@ -340,7 +340,7 @@ class _BolimlarPageState extends State<BolimlarPage> {
                                         );
                                       },
                                       child: const Text(
-                                          "O'chirish uchun ustiga bosing"),
+                                          "DELETE"),
                                     ),
                                   ],
                                 )
@@ -375,130 +375,131 @@ class _BolimlarPageState extends State<BolimlarPage> {
         onPressed: () async {
           nameController.text = '';
           await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setState) {
-                    return AlertDialog(
-                      title: const Text("Malumotlarni to'ldiring"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Container(
-                            height: 45,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: Colors.grey)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _currentIndex = 0;
-                                        _currentTab = 'Tushum';
-                                        setState(() {});
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: _currentIndex == 0
-                                            ? Colors.blue
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Tushum',
-                                          style: TextStyle(
-                                            color: _currentIndex == 0
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _currentIndex = 1;
-                                        _currentTab = 'Chiqim';
-                                        setState(() {});
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: _currentIndex == 1
-                                            ? Colors.blue
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Chiqim',
-                                          style: TextStyle(
-                                            color: _currentIndex == 1
-                                                ? Colors.white
-                                                : Colors.red,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextField(
-                            controller: nameController,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                hintText: "Bo'limni kiriting"),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+            context: context,
+            builder: (BuildContext context) {
+              return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return AlertDialog(
+                    title: const Text("Malumotlarni to'ldiring"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.grey)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ElevatedButton(
-                                onPressed: () async {
-                                  Bolimlar yangiBolim = Bolimlar();
-                                  yangiBolim.name = nameController.text;
-                                  yangiBolim.tushummi_yoki_chiqimmi =
-                                      num.tryParse(_currentIndex.toString()) ??
-                                          0;
-                                  await yangiBolim.insert();
-                                  loadFromGlobal();
-                                  Navigator.pop(context);
-                                  nameController.clear();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.lightBlue.shade100),
-                                child: const Row(
-                                  children: [Icon(Icons.done), Text('Saqlash')],
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _currentIndex = 0;
+                                      _currentTab = 'Tushum';
+                                      setState(() {});
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: _currentIndex == 0
+                                          ? Colors.blue
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Tushum',
+                                        style: TextStyle(
+                                          color: _currentIndex == 0
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(
-                                width: 10,
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _currentIndex = 1;
+                                      _currentTab = 'Chiqim';
+                                      setState(() {});
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: _currentIndex == 1
+                                          ? Colors.blue
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Chiqim',
+                                        style: TextStyle(
+                                          color: _currentIndex == 1
+                                              ? Colors.white
+                                              : Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              });
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextField(
+                          controller: nameController,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              hintText: "Bo'limni kiriting"),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                Bolimlar yangiBolim = Bolimlar();
+                                yangiBolim.name = nameController.text;
+                                yangiBolim.tushummi_yoki_chiqimmi =
+                                    num.tryParse(_currentIndex.toString()) ?? 0;
+                                await yangiBolim.insert();
+                                loadFromGlobal();
+                                Navigator.pop(context);
+                                nameController.clear();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.lightBlue.shade100),
+                              child: const Row(
+                                children: [Icon(Icons.done), Text('Saqlash')],
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          );
+          loadFromGlobal();
         },
         child: const Text('+'),
       ),

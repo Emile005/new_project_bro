@@ -13,6 +13,7 @@ class TushumChiqim {
   int idKarta = 0;
   int idKantakt = 0;
   int idBolim = 0;
+  int idKantaktBolim = 0;
 
   TushumChiqim();
 
@@ -26,6 +27,7 @@ class TushumChiqim {
     idKarta = int.tryParse(json['idKarta'].toString()) ?? 0;
     idKantakt = int.tryParse(json['idKantakt'].toString()) ?? 0;
     idBolim = int.tryParse(json['idBolim'].toString()) ?? 0;
+    idKantaktBolim = int.tryParse(json['idKantaktBolim'].toString()) ?? 0;
   }
 
   Map<String, dynamic> toJson() => {
@@ -37,6 +39,7 @@ class TushumChiqim {
         'idKarta': idKarta,
         'idKantakt': idKantakt,
         'idBolim': idBolim,
+        'idKantaktBolim': idKantaktBolim,
       };
 
   Future<int> insert() async {
@@ -70,6 +73,7 @@ CREATE TABLE "tushummi_chiqimmi" (
   "idKarta"  INTEGER NOT NULL DEFAULT 0,
   "idKantakt"  INTEGER NOT NULL DEFAULT 0,
   "idBolim"  INTEGER NOT NULL DEFAULT 0,
+  "idKantaktBolim"  INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY("id" AUTOINCREMENT)
 );
   """;

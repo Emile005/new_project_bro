@@ -13,7 +13,14 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
   final TextEditingController nameController = TextEditingController();
   List<KantaktBolim> kantaktbolimObjectList = [];
   List<Kantakt> kantaktObjectList = [];
-  Map<int, String> bolimkantaktlarii = {};
+  List<num> sum = [];
+  Map<int, double> bolimTushumSummalariPilus = {};
+  Map<int, double> bolimTushumSummalariMinus = {};
+  Map<int, double> bolimChiqimSummalriPilus = {};
+  Map<int, double> bolimChiqimSummalriMinus = {};
+  num umumiyyigindi = 0;
+  num umumiyyigindii = 0;
+  int yigindi = 0;
 
   @override
   void initState() {
@@ -23,6 +30,7 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
 
   Future<void> loadView() async {
     print('loadView');
+
     (await KantaktBolim.service.select()).forEach((key, value) {
       KantaktBolim.obyektlar[key] = KantaktBolim.fromJson(value);
     });
@@ -36,10 +44,31 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
     print('loadFromGlobal');
     kantaktbolimObjectList = KantaktBolim.obyektlar.values.toList();
     kantaktObjectList = Kantakt.obyektlar.values.toList();
-    setState(() {
-      kantaktbolimObjectList;
-      kantaktObjectList;
-    });
+    umumiyyigindi = 0;
+    for (Kantakt tushumchiqim in Kantakt.obyektlar.values.toList()) {
+      print(tushumchiqim.toJson());
+      umumiyyigindi += tushumchiqim.price;
+      if (tushumchiqim.idKantakt == tushumchiqim.idKantakt) {
+        if (tushumchiqim.price > 0) {
+          bolimTushumSummalariPilus[tushumchiqim.idKantakt] =
+              tushumchiqim.price +
+                  (bolimTushumSummalariPilus[tushumchiqim.idKantakt] ?? 0);
+        } else {
+          bolimTushumSummalariMinus[tushumchiqim.idKantakt] =
+              tushumchiqim.price +
+                  (bolimTushumSummalariMinus[tushumchiqim.idKantakt] ?? 0);
+        }
+        sum.add(tushumchiqim.price);
+        print("sum: ${sum}");
+      }
+    }
+
+    setState(
+      () {
+        kantaktbolimObjectList;
+        kantaktObjectList;
+      },
+    );
   }
 
   @override
@@ -47,88 +76,61 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text(
-          "Kantakt bo'limlaringiz",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        title: Column(
+          children: [
+            const Text(
+              "Umumiy kantaktbo'limlar yig'indisi",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            Text("$umumiyyigindi"),
+          ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: kantaktbolimObjectList.length,
-              itemBuilder: (context, index) {
-                KantaktBolim kantaktObject = kantaktbolimObjectList[index];
-                return Card(
-                  child: ListTile(
-                    onTap: () async {
-                      await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return StatefulBuilder(builder:
-                                (BuildContext context, StateSetter setState) {
-                              return AlertDialog(
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      height: 200,
-                                      width: 150,
-                                      child: Column(
-                                        children: [
-                                          const Text(
-                                              "Sizning bo'limdagi kantaktlaringiz"),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          Expanded(
-                                            child: ListView.builder(
-                                              itemBuilder: (context, index) {
-                                                return Card(
-                                                  child: ListTile(
-                                                    title: Text(
-                                                        bolimkantaktlarii
-                                                            .keys.first
-                                                            .toString()),
-                                                    subtitle: Text(
-                                                        bolimkantaktlarii.values
-                                                            .toString()
-                                                            .toString()),
-                                                  ),
-                                                );
-                                              },
-                                              itemCount:
-                                                  bolimkantaktlarii.length,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            });
-                          });
-                    },
-                    onLongPress: () {
-                      kantaktObject.delete();
-                      loadFromGlobal();
-                    },
-                    title: Text(kantaktObject.name),
-                  ),
-                );
+      body: ListView.builder(
+        itemCount: kantaktbolimObjectList.length,
+        itemBuilder: (context, index) {
+          KantaktBolim kantaktObject = kantaktbolimObjectList[index];
+          double summa = bolimTushumSummalariPilus[kantaktObject.id] ?? 0;
+          double summ = bolimTushumSummalariMinus[kantaktObject.id] ?? 0;
+          return Card(
+            child: ListTile(
+              onLongPress: () {
+                kantaktObject.delete();
+                loadFromGlobal();
               },
+              title: Text(
+                kantaktObject.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Row(
+                children: [
+                  Text(
+                    '$summa',
+                    style: const TextStyle(
+                        color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "$summ",
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setState) {
+            context: context,
+            builder: (BuildContext context) {
+              return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
                   return AlertDialog(
                     title: const Text("Ma'lumotlarni to'ldiring"),
                     content: Column(
@@ -147,88 +149,29 @@ class _KantaktBolimlarPageState extends State<KantaktBolimlarPage> {
                         const SizedBox(
                           height: 10,
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: Expanded(
-                            child: ListView.builder(
-                              itemBuilder: (context, index) {
-                                Kantakt kantaktObject =
-                                    kantaktObjectList[index];
-                                return Card(
-                                  child: ListTile(
-                                    onLongPress: () {
-                                      kantaktObject.delete();
-                                      loadFromGlobal();
-                                      Navigator.pop(context);
-                                    },
-                                    title: Text(kantaktObject.name),
-                                    subtitle: ElevatedButton(
-                                        onPressed: () {
-                                          print(
-                                              'kantaktobject.name:    ${kantaktObject.name}');
-                                          kantaktObject.tanlov = 1;
-                                          loadFromGlobal();
-                                          print(
-                                              "kantaktobject.tanlov:   ${kantaktObject.tanlov}   . ${kantaktObject.name}}");
-                                          if (kantaktObject.tanlov == 1) {
-                                            bolimkantaktlarii.addAll({
-                                              kantaktObject.id:
-                                                  kantaktObject.name
-                                            });
-                                          }
-                                          kantaktObject.insert();
-                                          print(
-                                              "kantaktObject.toJson() ${kantaktObject.toJson()}");
-                                          print(
-                                              " kantaktObject.hashCode ${kantaktObject.hashCode.toString()}");
-                                          print(
-                                              "kantaktObject.vaqti ${kantaktObject.vaqti}");
-                                          print(
-                                              'kantaktObject.tanlov ${kantaktObject.tanlov}');
-                                          print(
-                                              'kantaktObject.runtimeType ${kantaktObject.runtimeType}');
-                                          print(
-                                              "kantaktObject.price ${kantaktObject.price}");
-                                          print(
-                                              "kantaktObject.id ${kantaktObject.id}");
-                                          print(
-                                              'bolimKantaktlari keys:    ${bolimkantaktlarii.keys.toString()}');
-                                          print(
-                                              'BOLIMKONTAKTLARI values:    ${bolimkantaktlarii.values.toString()}');
-                                        },
-                                        child: const Text("Qo'shish")),
-                                  ),
-                                );
-                              },
-                              itemCount: kantaktObjectList.length,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             ElevatedButton(
-                                onPressed: () async {
-                                  KantaktBolim yangiKantaktBolim =
-                                      KantaktBolim();
-                                  yangiKantaktBolim.name = nameController.text;
-                                  await yangiKantaktBolim.insert();
-                                  loadFromGlobal();
-                                  nameController.clear();
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('Saqlash'))
+                              onPressed: () async {
+                                KantaktBolim yangiKantaktBolim = KantaktBolim();
+                                yangiKantaktBolim.name = nameController.text;
+                                await yangiKantaktBolim.insert();
+                                loadFromGlobal();
+                                nameController.clear();
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Saqlash'),
+                            ),
                           ],
                         )
                       ],
                     ),
                   );
-                });
-              });
+                },
+              );
+            },
+          );
         },
         child: const Text('+'),
       ),

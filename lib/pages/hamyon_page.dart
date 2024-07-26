@@ -18,24 +18,12 @@ class _HamyonsPageState extends State<HamyonsPage> {
   void initState() {
     super.initState();
 
-    loadView();
-  }
-
-  Future<void> loadView() async {
-    print('loadView');
-
-    (await Karta.service.select()).forEach((key, value) {
-      Karta.obyektlar[key] = Karta.fromJson(value);
-    });
     loadFromGlobal();
   }
 
-  _hisoblash() {}
   Future<void> loadFromGlobal() async {
     print('loadFromGlobal');
-
     kartaObjectList = Karta.obyektlar.values.toList();
-    // hamyonObjectList.sort((a, b) => -b.id.compareTo(a.id));
     setState(() {
       kartaObjectList;
     });
@@ -158,7 +146,7 @@ class _HamyonsPageState extends State<HamyonsPage> {
                                                                       .text) ??
                                                               0;
                                                           updateKarta.vaqti =
-                                                              '${DateTime.now().hour}:${DateTime.now().minute}';
+                                                              "${DateTime.now().hour}:${DateTime.now().minute > 10 ? DateTime.now().minute : '0${DateTime.now().minute}'}";
                                                           setState(() {
                                                             updateKarta
                                                                 .update();
@@ -194,8 +182,7 @@ class _HamyonsPageState extends State<HamyonsPage> {
                                               );
                                             });
                                       },
-                                      child: const Text(
-                                          'Tahrirlash uchun ustiga bosing'),
+                                      child: const Text('EDIT'),
                                     ),
                                     const SizedBox(
                                       width: 20,
@@ -238,8 +225,7 @@ class _HamyonsPageState extends State<HamyonsPage> {
                                             },
                                           );
                                         },
-                                        child: const Text(
-                                            "O'chirish uchun ustiga bosing"))
+                                        child: const Text("DELETE"))
                                   ],
                                 )
                               ],
@@ -306,7 +292,7 @@ class _HamyonsPageState extends State<HamyonsPage> {
                             yangiKarta.price =
                                 num.tryParse(priceController.text) ?? 0;
                             yangiKarta.vaqti =
-                                '${DateTime.now().hour}:${DateTime.now().minute}';
+                                "${DateTime.now().hour}:${DateTime.now().minute > 10 ? DateTime.now().minute : '0${DateTime.now().minute}'}";
                             await yangiKarta.insert();
                             loadFromGlobal();
                             Navigator.pop(context);

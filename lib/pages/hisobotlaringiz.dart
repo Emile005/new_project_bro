@@ -56,11 +56,6 @@ class _HisobotlaringizPageState extends State<HisobotlaringizPage> {
     for (var element in bolimobjectlistminus) {
       bolimyigindimanfiy += element;
     }
-
-    print('bolimobjectlistpilus $bolimobjectlistpilus');
-    print('bolimobjectlistminus $bolimobjectlistminus');
-    print('bolimTUSHUMLARSUMMALAR $bolimTushumSummalari');
-    print('bolimCHIQIMLARSUMMALAR  $bolimChiqimSummalri');
   }
 
   @override
@@ -68,19 +63,21 @@ class _HisobotlaringizPageState extends State<HisobotlaringizPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Finmaster'),
+        title: const Text('HISOBOTLAR'),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 20, left: 30),
+        padding: const EdgeInsets.only(top: 8),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     height: 50,
-                    width: MediaQuery.of(context).size.width * .4,
+                    width: MediaQuery.of(context).size.width * .3,
                     decoration: BoxDecoration(
                       border: const Border.fromBorderSide(
                           BorderSide(color: Colors.green)),
@@ -99,7 +96,7 @@ class _HisobotlaringizPageState extends State<HisobotlaringizPage> {
                   ),
                   Container(
                     height: 50,
-                    width: MediaQuery.of(context).size.width * .4,
+                    width: MediaQuery.of(context).size.width * .3,
                     decoration: BoxDecoration(
                       color: Colors.grey,
                       border: const Border.fromBorderSide(
@@ -119,87 +116,85 @@ class _HisobotlaringizPageState extends State<HisobotlaringizPage> {
               const SizedBox(
                 height: 10,
               ),
-              Center(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: Expanded(
-                    child: ListView.builder(
-                      primary: false,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: bolimTushumSummalari.length,
-                      itemBuilder: (context, index) {
-                        Bolimlar bolim = Bolimlar.obyektlar[
-                            bolimTushumSummalari.keys.toList()[index]]!;
-                        double summa =
-                            bolimTushumSummalari.values.toList()[index];
-                        return Column(
-                          children: [
-                            Card(
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    subtitle: Row(
-                                      children: [
-                                        Text(bolim.name),
-                                        const Spacer(),
-                                        Text("$summa"),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+              Card(
+                child: ListView.builder(
+                  primary: false,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: bolimTushumSummalari.length,
+                  itemBuilder: (context, index) {
+                    Bolimlar bolim = Bolimlar
+                        .obyektlar[bolimTushumSummalari.keys.toList()[index]]!;
+                    print("Bo'lim bolim boliM    ${bolim.toString()}");
+                    double summa = bolimTushumSummalari.values.toList()[index];
+                    return Column(
+                      children: [
+                        Card(
+                          child: Column(
+                            children: [
+                              ListTile(
+                                subtitle: Row(
+                                  children: [
+                                    Text(bolim.name),
+                                    const Spacer(),
+                                    Text("$summa"),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 15),
-              const Divider(),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 100),
+                child: SizedBox(
+                  height: 10,
+                  width: double.infinity,
+                  child: Divider(
+                    color: Colors.red,
+                  ),
+                ),
+              ),
               const SizedBox(height: 15),
               const Text('Chiqim'),
               const SizedBox(
                 height: 10,
               ),
               Card(
-                child: Expanded(
-                  child: ListView.builder(
-                    primary: false,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: bolimChiqimSummalri.length,
-                    itemBuilder: (context, index) {
-                      Bolimlar bolim = Bolimlar
-                          .obyektlar[bolimChiqimSummalri.keys.toList()[index]]!;
-                      double summa = bolimChiqimSummalri.values.toList()[index];
-                      return Column(
-                        children: [
-                          Card(
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  // title: const Center(
-                                  //   child: Text("Chiqim"),
-                                  // ),
-                                  subtitle: Row(
-                                    children: [
-                                      Text(bolim.name),
-                                      const Spacer(),
-                                      Text("$summa"),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
+                child: ListView.builder(
+                  primary: false,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: bolimChiqimSummalri.length,
+                  itemBuilder: (context, index) {
+                    Bolimlar bolim = Bolimlar
+                        .obyektlar[bolimChiqimSummalri.keys.toList()[index]]!;
+                    double summa = bolimChiqimSummalri.values.toList()[index];
+                    return Column(
+                      children: [
+                        Card(
+                          child: Column(
+                            children: [
+                              ListTile(
+                                subtitle: Row(
+                                  children: [
+                                    Text(bolim.name),
+                                    const Spacer(),
+                                    Text("$summa"),
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
-                        ],
-                      );
-                    },
-                  ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               )
             ],

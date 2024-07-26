@@ -6,7 +6,8 @@ class Kantakt {
   static final Map<int, Kantakt> obyektlar = {};
 
   int id = 0;
-  int tanlov = 0;
+  int idKantakt = 0;
+  String tanlov = '';
   String name = '';
   String vaqti = '';
   num price = 0;
@@ -14,7 +15,8 @@ class Kantakt {
 
   Kantakt.fromJson(Map<String, dynamic> json) {
     id = int.parse(json['id'].toString());
-    tanlov = int.parse(json['tanlov'].toString());
+    idKantakt = int.parse(json['idKantakt'].toString());
+    tanlov = json['tanlov'].toString();
     name = json['name'].toString();
     vaqti = json['vaqti'].toString();
     price = num.tryParse(json['price'].toString()) ?? 0;
@@ -22,6 +24,7 @@ class Kantakt {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'idKantakt': idKantakt,
         'tanlov': tanlov,
         'name': name,
         'vaqti': vaqti,
@@ -52,7 +55,8 @@ class KantaktService extends CrudHelper {
   static String createTable = """
 CREATE TABLE "kantakt" (
  "id"  INTEGER NOT NULL DEFAULT 0,
- "tanlov"  INTEGER NOT NULL DEFAULT 0,
+ "idKantakt"  INTEGER NOT NULL DEFAULT 0,
+  "tanlov"  TEXT NOT NULL DEFAULT '',
   "name"  TEXT NOT NULL DEFAULT '',
   "vaqti"  TEXT NOT NULL DEFAULT '',
   "price"  NUMERIC DEFAULT 0,

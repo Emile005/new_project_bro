@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:new_project_bro/my_app.dart';
 import 'package:new_project_bro/pages/bolimlar_page.dart';
@@ -9,6 +8,7 @@ import 'package:new_project_bro/pages/hisobotlaringiz.dart';
 import 'package:new_project_bro/pages/kantakt_bolimlari.dart';
 import 'package:new_project_bro/service/bolim_service.dart';
 import 'package:new_project_bro/service/db_helper.dart';
+import 'package:new_project_bro/service/kantakt_bolim_service.dart';
 import 'package:new_project_bro/service/kantakt_service.dart';
 import 'package:new_project_bro/service/karta.dart';
 import 'package:new_project_bro/service/tushumchiqim.dart';
@@ -28,7 +28,6 @@ void main() async {
   }
   print("DB directory.path: ${directory.path}");
   DatabaseHelper().initDB(directory.path);
-
   runApp(const MyApp());
 }
 
@@ -40,8 +39,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  List<TushumChiqim> hamyonObjectList = [];
+  List<Kantakt> kantaktObjectList = [];
+  List<Kantakt> kantaktObjectListt = [];
+  List<Bolimlar> bolimObjectList = [];
+  List<KantaktBolim> kantaktBolimObjectList = [];
   int _currentIndex = 0;
-  int hisoblash = 0;
   num umumiyyigindi = 0;
   num kantaktyigindimusbat = 0;
   num kantaktyigindimanfiy = 0;
@@ -49,17 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
     "musbat": 0,
     "manfiy": 0,
   };
-  int allPrice = 0;
-  // ignore: unused_field
   String _currentTab = 'Tushum';
-  List<TushumChiqim> hamyonObjectList = [];
-  List<Kantakt> kantaktObjectList = [];
-  List<Karta> kartaObject = [];
-  List<Bolimlar> bolimObjectList = [];
   String _value = '';
   String _time = '';
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
 
   @override
   void initState() {
@@ -91,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     hamyonObjectList = TushumChiqim.obyektlar.values.toList();
     kantaktObjectList = Kantakt.obyektlar.values.toList();
     bolimObjectList = Bolimlar.obyektlar.values.toList();
+    kantaktBolimObjectList = KantaktBolim.obyektlar.values.toList();
 
     kantaktyigindimusbat = 0;
     kantaktyigindimanfiy = 0;
@@ -101,12 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
         kantaktyigindimanfiy = kantaktyigindimanfiy - kantakt.price;
       }
     }
-
     umumiyyigindi = 0;
     for (Karta karta in Karta.obyektlar.values.toList()) {
       umumiyyigindi += karta.price;
     }
-
     setState(() {});
   }
 
@@ -119,13 +115,20 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
         shape: const BeveledRectangleBorder(),
+        width: MediaQuery.sizeOf(context).width * .5,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
               const ListTile(
-                title: Text('Drawerga hush kelibsiz bro'),
+                title: Text(
+                  'DRAWER',
+                  style: TextStyle(
+                      color: Colors.teal,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(
                 height: 50,
@@ -136,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     "Bo'limlar",
                     style: TextStyle(
                         color: Colors.red,
-                        fontSize: 24,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold),
                   ),
                   onTap: () {
@@ -156,10 +159,10 @@ class _MyHomePageState extends State<MyHomePage> {
               Card(
                 child: ListTile(
                   title: const Text(
-                    "Hisobotlaringiz",
+                    "Hisobotlar",
                     style: TextStyle(
                         color: Colors.red,
-                        fontSize: 24,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold),
                   ),
                   onTap: () {
@@ -181,10 +184,10 @@ class _MyHomePageState extends State<MyHomePage> {
               Card(
                 child: ListTile(
                   title: const Text(
-                    "Kantakt bo'limlaringiz",
+                    "Kantakt bo'limlar",
                     style: TextStyle(
                         color: Colors.red,
-                        fontSize: 24,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold),
                   ),
                   onTap: () {
@@ -199,6 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   },
                 ),
+              ),
+              const SizedBox(
+                height: 14,
               ),
             ],
           ),
@@ -229,14 +235,24 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.teal.shade500,
                     ),
                     height: MediaQuery.of(context).size.height * 0.13,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    child: Row(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Center(
-                          child: Text('Umumiy balans  $umumiyyigindi',
-                              style: const TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold)),
+                          child: Column(
+                            children: [
+                              const Text('Umumiy balans',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold)),
+                              Text('$umumiyyigindi',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -264,17 +280,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.teal.shade500,
                     ),
                     child: Center(
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             'Tushum $kantaktyigindimusbat',
                             style: const TextStyle(
-                                color: Colors.green,
+                                color: Color.fromARGB(255, 172, 209, 7),
                                 fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            width: 5,
                           ),
                           const Text(
                             'Kantakt',
@@ -282,9 +296,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 color: Colors.black,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            width: 5,
                           ),
                           Text(
                             'Chiqim $kantaktyigindimanfiy',
@@ -309,11 +320,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 TushumChiqim hamyonObject = hamyonObjectList[index];
                 Kantakt? kantaktObject;
                 if (hamyonObject.idKantakt > 0) {
-                  kantaktObject = Kantakt.obyektlar[hamyonObject.idKantakt]!;
+                  kantaktObject = Kantakt.obyektlar[hamyonObject.idKantakt];
                 }
                 Bolimlar? bolimObjectList =
                     Bolimlar.obyektlar[hamyonObject.idBolim];
-                print('Hamyonobjectidbolim: ${hamyonObject.idBolim}');
+                KantaktBolim? kantaktBolimObjectList =
+                    KantaktBolim.obyektlar[hamyonObject.idKantaktBolim];
+                Kantakt? kantaktObjectListt =
+                    Kantakt.obyektlar[hamyonObject.idKantakt];
+                TushumChiqim.obyektlar[hamyonObject.idBolim];
                 return Card(
                   child: ListTile(
                     onTap: () {
@@ -325,12 +340,13 @@ class _MyHomePageState extends State<MyHomePage> {
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
                                 const Center(
-                                    child: Text(
-                                  'Sizning kiritgan malumotlaringiz',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24),
-                                )),
+                                  child: Text(
+                                    'Sizning kiritgan malumotlaringiz',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 24),
+                                  ),
+                                ),
                                 Card(
                                   child: ListTile(
                                     title: Text(
@@ -346,13 +362,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             actions: [
                               ElevatedButton(
-                                child: const Text('Tahrirlash uchun bosing'),
+                                child: const Text('EDIT'),
                                 onPressed: () async {
                                   Navigator.pop(context);
                                   nameController.text = hamyonObject.name;
                                   priceController.text =
                                       hamyonObject.price.toString();
-
                                   (await Karta.service.select())
                                       .forEach((key, value) {
                                     Karta.obyektlar[key] =
@@ -383,6 +398,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       .tushummi_yoki_chiqimmi
                                       .toInt();
                                   await showDialog(
+                                    // ignore: use_build_context_synchronously
                                     context: context,
                                     builder: (BuildContext context) {
                                       return StatefulBuilder(builder:
@@ -390,7 +406,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               StateSetter setState) {
                                         return AlertDialog(
                                           title: const Text(
-                                            'Amal bajarish',
+                                            'TAHRIRLASH',
                                             style: TextStyle(
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold),
@@ -404,8 +420,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   border: OutlineInputBorder(
                                                     borderRadius:
                                                         BorderRadius.all(
-                                                            Radius.circular(
-                                                                14)),
+                                                      Radius.circular(14),
+                                                    ),
                                                   ),
                                                 ),
                                                 child:
@@ -436,104 +452,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                               const SizedBox(
                                                 height: 10,
                                               ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey),
-                                                  borderRadius:
-                                                      BorderRadius.circular(14),
-                                                ),
-                                                height: 45,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Expanded(
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            _currentIndex = 0;
-                                                            _currentTab =
-                                                                'Tushum';
-                                                            setState(() {});
-                                                          });
-                                                        },
-                                                        child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: _currentIndex ==
-                                                                    0
-                                                                ? Colors.blue
-                                                                : Colors
-                                                                    .transparent,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        14),
-                                                          ),
-                                                          child: Center(
-                                                            child: Text(
-                                                              'Tushum',
-                                                              style: TextStyle(
-                                                                color: _currentIndex == 0
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            _currentIndex = 1;
-                                                            _currentTab =
-                                                                'Chiqim';
-                                                            setState(() {});
-                                                          });
-                                                        },
-                                                        child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: _currentIndex ==
-                                                                    1
-                                                                ? Colors.blue
-                                                                : Colors
-                                                                    .transparent,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        14),
-                                                          ),
-                                                          child: Center(
-                                                            child: Text(
-                                                              'Chiqim',
-                                                              style: TextStyle(
-                                                                color:
-                                                                    _currentIndex ==
-                                                                            1
-                                                                        ? Colors
-                                                                            .white
-                                                                        : Colors
-                                                                            .red,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
                                               const Text(
-                                                'Kontakt qoshish uchun dostingizni tanlang',
+                                                "D'ostingizni tanlang",
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -547,8 +467,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   border: OutlineInputBorder(
                                                     borderRadius:
                                                         BorderRadius.all(
-                                                            Radius.circular(
-                                                                14)),
+                                                      Radius.circular(14),
+                                                    ),
                                                   ),
                                                 ),
                                                 child:
@@ -581,7 +501,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 height: 10,
                                               ),
                                               const Text(
-                                                "Kerakli bo'limni tanlang",
+                                                "Bo'limni tanlang",
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -661,8 +581,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 children: [
                                                   ElevatedButton(
                                                     onPressed: () async {
-                                                      _time = DateTime.now()
-                                                          .toString();
                                                       print('update Hamyon');
                                                       num oldPrice =
                                                           hamyonObject.price;
@@ -683,7 +601,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               dropdownValue
                                                                   .toString());
                                                       updateTushum.vaqti =
-                                                          '${DateTime.now().hour}:${DateTime.now().minute}';
+                                                          "${DateTime.now().hour}:${DateTime.now().minute > 10 ? DateTime.now().minute : '0${DateTime.now().minute}'}";
                                                       updateTushum.idKantakt =
                                                           int.parse(
                                                               dropdownValue2
@@ -697,6 +615,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           num.tryParse(_currentIndex
                                                                   .toString()) ??
                                                               0;
+                                                      print(
+                                                          "DROPDOWNVALUE2: ${dropdownValue2}");
+                                                      print(
+                                                          "DROPDOWNVALUE: ${dropdownValue}");
+                                                      print(
+                                                          "DROPDOWNVALUE3: ${dropdownValue3}");
                                                       print(
                                                           'tushummi yoki chiqimmi => ${updateTushum.tushummi_yoki_chiqimmi}');
                                                       await updateTushum
@@ -798,7 +722,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     },
                                   );
                                 },
-                                child: const Text("O'chirish uchun bosing"),
+                                child: const Text("DELETE"),
                               ),
                             ],
                           );
@@ -806,7 +730,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     },
                     subtitle: Text(
-                      'Izohingiz: ${hamyonObject.name}                  bolim: ${bolimObjectList?.name.toString()}',
+                      "Izohingiz: ${hamyonObject.name}\nBo'lim: ${bolimObjectList?.name.toString()}",
                     ),
                     title: hamyonObject.tushummi_yoki_chiqimmi == 0
                         ? Text(
@@ -847,309 +771,631 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          nameController.text = '';
-          priceController.text = '';
-          (await Karta.service.select()).forEach((key, value) {
-            Karta.obyektlar[key] = Karta.fromJson(value);
-          });
-          List<Karta> dropdownMenuList = [];
-          for (Karta karta in Karta.obyektlar.values.toList()) {
-            dropdownMenuList.add(karta);
-          }
-          int? dropdownValue = dropdownMenuList.first.id;
-          List<Kantakt> dropdownMenuKontakts = [];
-          for (Kantakt kantakt in Kantakt.obyektlar.values.toList()) {
-            dropdownMenuKontakts.add(kantakt);
-          }
-          int? dropdownValue2 = dropdownMenuKontakts.first.id;
-          List<Bolimlar> dropdownMenuBolim = [];
-          for (Bolimlar bolimlar in Bolimlar.obyektlar.values.toList()) {
-            dropdownMenuBolim.add(bolimlar);
-          }
-          int? dropdownValue3 = dropdownMenuBolim.first.id;
           await showDialog(
             context: context,
             builder: (BuildContext context) {
               return StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setState) {
-                return AlertDialog(
-                  title: const Text(
-                    'Amal bajarish',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(14)),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<int>(
-                            isDense: true,
-                            isExpanded: true,
-                            value: dropdownValue,
-                            onChanged: (value) {
-                              print("dropdownValue: $dropdownValue");
-                              setState(() {
-                                dropdownValue = value!;
-                              });
-                            },
-                            items: dropdownMenuList
-                                .map<DropdownMenuItem<int>>((value) {
-                              return DropdownMenuItem<int>(
-                                value: value.id,
-                                child: Text(value.name),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        height: 45,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.grey)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _currentIndex = 0;
-                                    _currentTab = 'Tushum';
-                                    setState(() {});
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: _currentIndex == 0
-                                        ? Colors.blue
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Tushum',
-                                      style: TextStyle(
-                                        color: _currentIndex == 0
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _currentIndex = 1;
-                                    _currentTab = 'Chiqim';
-                                    setState(() {});
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: _currentIndex == 1
-                                        ? Colors.blue
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Chiqim',
-                                      style: TextStyle(
-                                        color: _currentIndex == 1
-                                            ? Colors.white
-                                            : Colors.red,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      const Text(
-                        'Kontakt qoshish uchun dostingizni tanlang',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(14)),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<int>(
-                            isDense: true,
-                            isExpanded: true,
-                            value: dropdownValue2,
-                            onChanged: (value) {
-                              print("dropdownValue2: $dropdownValue2");
-                              setState(() {
-                                dropdownValue2 = value!;
-                              });
-                            },
-                            items: dropdownMenuKontakts
-                                .map<DropdownMenuItem<int>>((value) {
-                              return DropdownMenuItem<int>(
-                                value: value.id,
-                                child: Text(value.name),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      const Text(
-                        "Kerakli bo'limni tanlang",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(14)),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<int>(
-                            isDense: true,
-                            isExpanded: true,
-                            value: dropdownValue3,
-                            onChanged: (value) {
-                              print("dropdownValue3: $dropdownValue3");
-                              setState(() {
-                                dropdownValue3 = value!;
-                              });
-                            },
-                            items: dropdownMenuBolim
-                                .map<DropdownMenuItem<int>>((value) {
-                              return DropdownMenuItem<int>(
-                                value: value.id,
-                                child: Text(value.name),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        controller: priceController,
-                        decoration: InputDecoration(
-                          hintText: "Summani kiriting",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        controller: nameController,
-                        decoration: InputDecoration(
-                          hintText: "Izoh kiriting",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlue.shade100),
-                            onPressed: () async {
-                              print('insert new Hamyon');
-                              TushumChiqim yangiTushum = TushumChiqim();
-                              yangiTushum.name = nameController.text;
-                              yangiTushum.price =
-                                  num.tryParse(priceController.text) ?? 0;
-                              yangiTushum.idKarta =
-                                  int.parse(dropdownValue.toString());
-                              yangiTushum.idKantakt =
-                                  int.parse(dropdownValue2.toString());
-                              yangiTushum.idBolim =
-                                  int.parse(dropdownValue3.toString());
-                              yangiTushum.tushummi_yoki_chiqimmi =
-                                  num.tryParse(_currentIndex.toString()) ?? 0;
-                              yangiTushum.vaqti =
-                                  '${DateTime.now().hour}:${DateTime.now().minute}';
-                              await yangiTushum.insert();
-                              loadFromGlobal();
-                              Karta minusYokiPlus = Karta.obyektlar[
-                                  (int.tryParse(dropdownValue.toString()))]!;
-                              if (_currentIndex == 1) {
-                                minusYokiPlus.price =
-                                    minusYokiPlus.price - yangiTushum.price;
-                              } else if (_currentIndex == 0) {
-                                minusYokiPlus.price =
-                                    minusYokiPlus.price + yangiTushum.price;
+                builder: (BuildContext context, StateSetter setState) {
+                  return AlertDialog(
+                    title: const Text(
+                      'Qanday qayd kiritamiz',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton(
+                          onPressed: () async {
+                            _currentIndex = 0;
+                            _currentTab = 'Tushum';
+                            setState(() {});
+                            Navigator.pop(context);
+                            nameController.text = '';
+                            priceController.text = '';
+                            (await Karta.service.select())
+                                .forEach((key, value) {
+                              Karta.obyektlar[key] = Karta.fromJson(value);
+                            });
+                            List<Karta> dropdownMenuList = [];
+                            for (Karta karta
+                                in Karta.obyektlar.values.toList()) {
+                              dropdownMenuList.add(karta);
+                            }
+                            int? dropdownValue = dropdownMenuList.first.id;
+                            List<Kantakt> dropdownMenuKontakts = [];
+                            for (Kantakt kantakt
+                                in Kantakt.obyektlar.values.toList()) {
+                              dropdownMenuKontakts.add(kantakt);
+                            }
+                            int? dropdownValue2 = dropdownMenuKontakts.first.id;
+                            List<Bolimlar> dropdownMenuBolim = [];
+                            for (Bolimlar bolimlar
+                                in Bolimlar.obyektlar.values.toList()) {
+                              if (bolimlar.tushummi_yoki_chiqimmi == 0) {
+                                dropdownMenuBolim.add(bolimlar);
                               }
-                              await minusYokiPlus.update();
-                              /* ========= */
-                              Kantakt minusYokiPlusKantakt = Kantakt.obyektlar[
-                                  (int.parse(dropdownValue2.toString()))]!;
-                              Bolimlar yangiBolim = Bolimlar.obyektlar[
-                                  (int.parse(dropdownValue3.toString()))]!;
-                              if (_currentIndex == 1) {
-                                minusYokiPlusKantakt.price =
-                                    minusYokiPlusKantakt.price -
-                                        yangiTushum.price;
-                              } else if (_currentIndex == 0) {
-                                minusYokiPlusKantakt.price =
-                                    minusYokiPlusKantakt.price +
-                                        yangiTushum.price;
+                            }
+                            int? dropdownValue3 = dropdownMenuBolim.first.id;
+                            List<KantaktBolim> dropdownMenuBolimKantakt = [];
+                            await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return StatefulBuilder(
+                                  builder: (BuildContext context,
+                                      StateSetter setState) {
+                                    return AlertDialog(
+                                      title: const Text(
+                                        'Amal bajarish',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          InputDecorator(
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(14)),
+                                              ),
+                                            ),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton<int>(
+                                                isDense: true,
+                                                isExpanded: true,
+                                                value: dropdownValue,
+                                                onChanged: (value) {
+                                                  print(
+                                                      "dropdownValue: $dropdownValue");
+                                                  setState(() {
+                                                    dropdownValue = value!;
+                                                  });
+                                                },
+                                                items: dropdownMenuList
+                                                    .map<DropdownMenuItem<int>>(
+                                                  (value) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: value.id,
+                                                      child: Text(value.name),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          const Text(
+                                            "Do'stingizni tanlang",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          InputDecorator(
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(14)),
+                                              ),
+                                            ),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton<int>(
+                                                isDense: true,
+                                                isExpanded: true,
+                                                value: dropdownValue2,
+                                                onChanged: (value) {
+                                                  print(
+                                                      "dropdownValue2: $dropdownValue2");
+                                                  setState(
+                                                    () {
+                                                      dropdownValue2 = value!;
+                                                    },
+                                                  );
+                                                },
+                                                items: dropdownMenuKontakts
+                                                    .map<DropdownMenuItem<int>>(
+                                                  (value) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: value.id,
+                                                      child: Text(value.name),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          const Text(
+                                            "Bo'limni tanlang",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          InputDecorator(
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(14)),
+                                              ),
+                                            ),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton<int>(
+                                                isDense: true,
+                                                isExpanded: true,
+                                                value: dropdownValue3,
+                                                onChanged: (value) {
+                                                  print(
+                                                      "dropdownValue3: $dropdownValue3");
+                                                  setState(() {
+                                                    dropdownValue3 = value!;
+                                                  });
+                                                },
+                                                items: dropdownMenuBolim
+                                                    .map<DropdownMenuItem<int>>(
+                                                  (value) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: value.id,
+                                                      child: Text(value.name),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          TextField(
+                                            controller: priceController,
+                                            decoration: InputDecoration(
+                                              hintText: "Summani kiriting",
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          TextField(
+                                            controller: nameController,
+                                            decoration: InputDecoration(
+                                              hintText: "Izoh kiriting",
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors
+                                                        .lightBlue.shade100),
+                                                onPressed: () async {
+                                                  print('insert new Hamyon');
+                                                  TushumChiqim yangiTushum =
+                                                      TushumChiqim();
+                                                  yangiTushum.name =
+                                                      nameController.text;
+
+                                                  yangiTushum.price =
+                                                      num.tryParse(
+                                                              priceController
+                                                                  .text) ??
+                                                          0;
+                                                  yangiTushum.idKarta =
+                                                      int.parse(dropdownValue
+                                                          .toString());
+                                                  yangiTushum.idKantakt =
+                                                      int.parse(dropdownValue2
+                                                          .toString());
+                                                  yangiTushum.idBolim =
+                                                      int.parse(dropdownValue3
+                                                          .toString());
+                                                  yangiTushum
+                                                          .tushummi_yoki_chiqimmi =
+                                                      num.tryParse(_currentIndex
+                                                              .toString()) ??
+                                                          0;
+                                                  yangiTushum.vaqti =
+                                                      "${DateTime.now().hour}:${DateTime.now().minute > 10 ? DateTime.now().minute : '0${DateTime.now().minute}'}";
+                                                  await yangiTushum.insert();
+                                                  loadFromGlobal();
+                                                  Karta minusYokiPlus = Karta
+                                                      .obyektlar[(int.tryParse(
+                                                    dropdownValue.toString(),
+                                                  ))]!;
+                                                  if (_currentIndex == 1) {
+                                                    minusYokiPlus.price =
+                                                        minusYokiPlus.price -
+                                                            yangiTushum.price;
+                                                  } else if (_currentIndex ==
+                                                      0) {
+                                                    minusYokiPlus.price =
+                                                        minusYokiPlus.price +
+                                                            yangiTushum.price;
+                                                  }
+                                                  await minusYokiPlus.update();
+                                                  /* ========= */
+                                                  Kantakt minusYokiPlusKantakt =
+                                                      Kantakt.obyektlar[(int
+                                                          .parse(dropdownValue2
+                                                              .toString()))]!;
+                                                  if (_currentIndex == 1) {
+                                                    minusYokiPlusKantakt.price =
+                                                        minusYokiPlusKantakt
+                                                                .price -
+                                                            yangiTushum.price;
+                                                  } else if (_currentIndex ==
+                                                      0) {
+                                                    minusYokiPlusKantakt.price =
+                                                        minusYokiPlusKantakt
+                                                                .price +
+                                                            yangiTushum.price;
+                                                  }
+                                                  await minusYokiPlusKantakt
+                                                      .update();
+                                                  Navigator.pop(context);
+                                                  priceController.clear();
+                                                  nameController.clear();
+                                                  _currentIndex = 0;
+                                                  _value =
+                                                      minusYokiPlusKantakt.name;
+                                                },
+                                                child: const Row(
+                                                  children: [
+                                                    Icon(Icons.done),
+                                                    Text('Saqlash'),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                            loadFromGlobal();
+                          },
+                          child: const Text(
+                            "TUSHUM ---->",
+                            style: TextStyle(color: Colors.green),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            _currentIndex = 1;
+                            _currentTab = 'Chiqim';
+                            setState(() {});
+                            Navigator.pop(context);
+                            nameController.text = '';
+                            priceController.text = '';
+                            (await Karta.service.select())
+                                .forEach((key, value) {
+                              Karta.obyektlar[key] = Karta.fromJson(value);
+                            });
+                            List<Karta> dropdownMenuList = [];
+                            for (Karta karta
+                                in Karta.obyektlar.values.toList()) {
+                              dropdownMenuList.add(karta);
+                            }
+                            int? dropdownValue = dropdownMenuList.first.id;
+                            List<Kantakt> dropdownMenuKontakts = [];
+                            for (Kantakt kantakt
+                                in Kantakt.obyektlar.values.toList()) {
+                              dropdownMenuKontakts.add(kantakt);
+                            }
+                            int? dropdownValue2 = dropdownMenuKontakts.first.id;
+                            List<Bolimlar> dropdownMenuBolim = [];
+                            for (Bolimlar bolimlar
+                                in Bolimlar.obyektlar.values.toList()) {
+                              if (bolimlar.tushummi_yoki_chiqimmi == 1) {
+                                dropdownMenuBolim.add(bolimlar);
                               }
-                              await minusYokiPlusKantakt.update();
+                            }
+                            int? dropdownValue3 = dropdownMenuBolim.first.id;
+                            List<KantaktBolim> dropdownMenuBolimKantakt = [];
+                            await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return StatefulBuilder(
+                                  builder: (BuildContext context,
+                                      StateSetter setState) {
+                                    return AlertDialog(
+                                      title: const Text(
+                                        'Amal bajarish',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          InputDecorator(
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(14)),
+                                              ),
+                                            ),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton<int>(
+                                                isDense: true,
+                                                isExpanded: true,
+                                                value: dropdownValue,
+                                                onChanged: (value) {
+                                                  print(
+                                                      "dropdownValue: $dropdownValue");
+                                                  setState(() {
+                                                    dropdownValue = value!;
+                                                  });
+                                                },
+                                                items: dropdownMenuList
+                                                    .map<DropdownMenuItem<int>>(
+                                                  (value) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: value.id,
+                                                      child: Text(value.name),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          const Text(
+                                            "Do'stingizni tanlang",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          InputDecorator(
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(14)),
+                                              ),
+                                            ),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton<int>(
+                                                isDense: true,
+                                                isExpanded: true,
+                                                value: dropdownValue2,
+                                                onChanged: (value) {
+                                                  print(
+                                                      "dropdownValue2: $dropdownValue2");
+                                                  setState(
+                                                    () {
+                                                      dropdownValue2 = value!;
+                                                    },
+                                                  );
+                                                },
+                                                items: dropdownMenuKontakts
+                                                    .map<DropdownMenuItem<int>>(
+                                                  (value) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: value.id,
+                                                      child: Text(value.name),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          const Text(
+                                            "Bo'limni tanlang",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          InputDecorator(
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(14)),
+                                              ),
+                                            ),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton<int>(
+                                                isDense: true,
+                                                isExpanded: true,
+                                                value: dropdownValue3,
+                                                onChanged: (value) {
+                                                  print(
+                                                      "dropdownValue3: $dropdownValue3");
+                                                  setState(() {
+                                                    dropdownValue3 = value!;
+                                                  });
+                                                },
+                                                items: dropdownMenuBolim
+                                                    .map<DropdownMenuItem<int>>(
+                                                  (value) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: value.id,
+                                                      child: Text(value.name),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          TextField(
+                                            controller: priceController,
+                                            decoration: InputDecoration(
+                                              hintText: "Summani kiriting",
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          TextField(
+                                            controller: nameController,
+                                            decoration: InputDecoration(
+                                              hintText: "Izoh kiriting",
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors
+                                                        .lightBlue.shade100),
+                                                onPressed: () async {
+                                                  print('insert new Hamyon');
+                                                  TushumChiqim yangiTushum =
+                                                      TushumChiqim();
+                                                  yangiTushum.name =
+                                                      nameController.text;
 
-                              Navigator.pop(context);
-
-                              priceController.clear();
-                              nameController.clear();
-                              _currentIndex = 0;
-                              _value = minusYokiPlusKantakt.name;
-                            },
-                            child: const Row(
-                              children: [Icon(Icons.done), Text('Saqlash')],
-                            ),
+                                                  yangiTushum.price =
+                                                      num.tryParse(
+                                                              priceController
+                                                                  .text) ??
+                                                          0;
+                                                  yangiTushum.idKarta =
+                                                      int.parse(dropdownValue
+                                                          .toString());
+                                                  yangiTushum.idKantakt =
+                                                      int.parse(dropdownValue2
+                                                          .toString());
+                                                  yangiTushum.idBolim =
+                                                      int.parse(dropdownValue3
+                                                          .toString());
+                                                  yangiTushum
+                                                          .tushummi_yoki_chiqimmi =
+                                                      num.tryParse(_currentIndex
+                                                              .toString()) ??
+                                                          0;
+                                                  yangiTushum.vaqti =
+                                                      '${DateTime.now().hour}:${DateTime.now().minute}';
+                                                  await yangiTushum.insert();
+                                                  loadFromGlobal();
+                                                  Karta minusYokiPlus = Karta
+                                                      .obyektlar[(int.tryParse(
+                                                    dropdownValue.toString(),
+                                                  ))]!;
+                                                  if (_currentIndex == 1) {
+                                                    minusYokiPlus.price =
+                                                        minusYokiPlus.price -
+                                                            yangiTushum.price;
+                                                  } else if (_currentIndex ==
+                                                      0) {
+                                                    minusYokiPlus.price =
+                                                        minusYokiPlus.price +
+                                                            yangiTushum.price;
+                                                  }
+                                                  await minusYokiPlus.update();
+                                                  /* ========= */
+                                                  Kantakt minusYokiPlusKantakt =
+                                                      Kantakt.obyektlar[(int
+                                                          .parse(dropdownValue2
+                                                              .toString()))]!;
+                                                  if (_currentIndex == 1) {
+                                                    minusYokiPlusKantakt.price =
+                                                        minusYokiPlusKantakt
+                                                                .price -
+                                                            yangiTushum.price;
+                                                  } else if (_currentIndex ==
+                                                      0) {
+                                                    minusYokiPlusKantakt.price =
+                                                        minusYokiPlusKantakt
+                                                                .price +
+                                                            yangiTushum.price;
+                                                  }
+                                                  await minusYokiPlusKantakt
+                                                      .update();
+                                                  Navigator.pop(context);
+                                                  priceController.clear();
+                                                  nameController.clear();
+                                                  _currentIndex = 0;
+                                                  _value =
+                                                      minusYokiPlusKantakt.name;
+                                                },
+                                                child: const Row(
+                                                  children: [
+                                                    Icon(Icons.done),
+                                                    Text('Saqlash'),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                            loadFromGlobal();
+                          },
+                          child: const Text(
+                            "CHIQIM <----",
+                            style: TextStyle(color: Colors.red),
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              });
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
             },
           );
           loadFromGlobal();

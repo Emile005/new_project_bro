@@ -18,6 +18,8 @@ class Bolimlar {
         num.tryParse(json['tushummi_yoki_chiqimmi'].toString()) ?? 0;
   }
 
+  get tanlov => null;
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

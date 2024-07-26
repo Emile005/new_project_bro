@@ -56,18 +56,21 @@ class DatabaseHelper {
     birinchiDefaultKantakt.price = 10000000;
     birinchiDefaultKantakt.vaqti =
         '${DateTime.now().hour}:${DateTime.now().minute}';
+    birinchiDefaultKantakt.idKantakt = 1;
     await birinchiDefaultKantakt.insert();
     Kantakt ikkinchifefaultKantakt = Kantakt();
     ikkinchifefaultKantakt.name = "Umar";
     ikkinchifefaultKantakt.price = 10000000;
     ikkinchifefaultKantakt.vaqti =
         '${DateTime.now().hour}:${DateTime.now().minute}';
+    ikkinchifefaultKantakt.idKantakt = 1;
     await ikkinchifefaultKantakt.insert();
     Kantakt uchinchiDefaultKantakt = Kantakt();
     uchinchiDefaultKantakt.name = "Usmon";
     uchinchiDefaultKantakt.price = 10000000;
     uchinchiDefaultKantakt.vaqti =
         '${DateTime.now().hour}:${DateTime.now().minute}';
+    uchinchiDefaultKantakt.idKantakt = 1;
     await uchinchiDefaultKantakt.insert();
     Bolimlar birinchiDefaultBolim = Bolimlar();
     birinchiDefaultBolim.name = "Oziq-ovqat";
